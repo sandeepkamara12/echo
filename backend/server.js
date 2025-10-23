@@ -1,14 +1,28 @@
 import express from "express";
 import mongoose from "mongoose";
+import { createServer } from "http";
 import dotenv from "dotenv";
 import cors from 'cors';
 import userRoute from './routes/userRoute.js';
 import authRouter from "./routes/authRoute.js";
+import connectDB from "./config/db.js";
+import {socketHandler} from './socket/index.js';
 dotenv.config();
 
-mongoose.connect("mongodb://localhost:27017/react-node-chat");
-
 const app = express();
+const server = createServer(app);
+connectDB()
+  .then(() => {
+    console.log("Database connected successfully");
+    server.listen(3000, () => {
+      socketHandler(server);
+      console.log("listening on *:3000");
+    });
+  })
+  .catch(err => {
+    console.error("Database connection failed:", err);
+  });
+
 app.use(cors({
     "origin": "*",
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",

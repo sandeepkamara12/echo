@@ -10,8 +10,10 @@ import { registerUser } from '../../api/authAPI.js';
 import { toast } from 'react-toastify';
 import { useRef } from 'react';
 import { email, image, mobile, name, registerPassword } from '../../helpers/errors.js';
+import { useAuth } from '../../hooks/useAuth.js';
 
 const Register = () => {
+    const {loading} = useAuth();
     const fileInputRef = useRef(null);
     const formik = useFormik({
         initialValues: {
@@ -84,7 +86,11 @@ const Register = () => {
                             <Password label="Password" name="password" value={formik.values.password} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.errors.password} touched={formik.touched.password} />
                             <Mobile label="Mobile" name="mobile" value={formik.values.mobile} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.errors.mobile} touched={formik.touched.mobile} />
                             <ImageUpload label="Image" name="image" onChange={(e) => formik.setFieldValue("image", e.currentTarget.files[0])} onBlur={formik.handleBlur} error={formik.errors.image} touched={formik.touched.image} ref={fileInputRef} />
-                            <button type="submit" className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-hidden focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">Sign up</button>
+                            <button type="submit" className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-hidden focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                                {
+                                    loading ? 'loading...' : 'Sign up'
+                                }
+                            </button>
                         </div>
                     </form>
                 </div>

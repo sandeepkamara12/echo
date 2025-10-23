@@ -6,7 +6,7 @@ const OuterLayout = () => {
     return (
         <main id="content" className={`transition-all duration-300`}>
             <Header />
-            <div className='px-3 py-4 h-[calc(100vh-100px)] overflow-auto flex lg:items-center justify-center'>
+            <div className='px-3 py-4 h-[calc(100vh-100px)] overflow-auto flex items-center justify-center'>
                 <Outlet />
             </div>
             <Footer />

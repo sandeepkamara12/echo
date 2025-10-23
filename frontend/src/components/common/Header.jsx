@@ -8,17 +8,7 @@ const Header = ({ toggleSidebar, setToggleSidebar }) => {
   return (
     <div className="sticky top-0 inset-x-0 z-20 bg-white border-b border-gray-200 px-3">
       <div className="flex items-center py-2 justify-between">
-         <span>
-
-          {isAuthenticated ? (
-            <>
-              <h2 className='capitalize'>Welcome, {user?.name}!</h2>
-              <button onClick={logout}>Logout</button>
-            </>
-          ) : (
-            <Link to="/login">Login</Link>
-          )}
-        </span>
+        
         <div className='flex items-center'>
           <button type="button" onClick={() => setToggleSidebar(!toggleSidebar)} className="size-8 flex justify-center items-center gap-x-2 border border-gray-200 text-gray-800 hover:text-gray-500 rounded-lg focus:outline-hidden focus:text-gray-500 disabled:opacity-50 disabled:pointer-events-none dark:border-neutral-700 dark:text-neutral-200 dark:hover:text-neutral-500 dark:focus:text-neutral-500" aria-haspopup="dialog" aria-expanded="false" aria-controls="hs-application-sidebar" aria-label="Toggle navigation" data-hs-overlay="#hs-application-sidebar">
             <span className="sr-only">Toggle Navigation</span>
@@ -37,6 +27,18 @@ const Header = ({ toggleSidebar, setToggleSidebar }) => {
             </li>
           </ol>
         </div>
+
+         <span>
+
+          {isAuthenticated ? (
+            <>
+              <h2 className='capitalize'>Welcome, {user?.name}!</h2>
+              <button onClick={logout}>Logout</button>
+            </>
+          ) : (
+            <Link to="/login">Login</Link>
+          )}
+        </span>
        
       </div>
     </div>

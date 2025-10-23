@@ -3,8 +3,11 @@ import { useLocalStorage } from "./useLocalStorage"
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../axiosInstance";
+import { toast } from "react-toastify";
+import { getSocket, setSocket } from "../socket";
 
 export const useAuth = () => {
+    const socket = getSocket();
     const navigate = useNavigate();
     const [accessToken, setAccessToken] = useLocalStorage('access_token', null);
     const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', null);
@@ -28,10 +31,25 @@ export const useAuth = () => {
         }
     };
 
-    const logout = () => {
-        setAccessToken(null);
-        setRefreshToken(null);
-        navigate("/login");
+    const logout = async () => {
+        try {
+            const output = await axiosInstance.get(`${import.meta.env.VITE_BA_URL}/api/logout`);
+            if (output.data.success) {
+                toast.success(output.data.message);
+                setAccessToken(null);
+                setRefreshToken(null);
+                
+                socket.off("disconnect");
+                socket.disconnect();
+                setSocket();
+                navigate("/login");
+            }
+            else {
+                toast.error(output.data.message);
+            }
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
     }
 
     useEffect(() => {
@@ -39,10 +57,6 @@ export const useAuth = () => {
         const userProfile = async () => {
             try {
                 const response = await axiosInstance.post(`${import.meta.env.VITE_BA_URL}/api/profile`, {}, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'authorization': `Bearer ${accessToken}`
-                    },
                     signal: controller.signal
                 });
                 setUser(response.data.user)

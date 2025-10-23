@@ -1,5 +1,5 @@
 import express from "express";
-import { forgotPasswordController, loginUserController, logoutController, otpVerificationController, refreshTokenController, registerUserController, sendMailVerificationController, sendOTPVerificationController, userProfileController, userUpdateProfileController } from "../controllers/userController.js";
+import { forgotPasswordController, getAllOtherUsers, loginUserController, logoutController, otpVerificationController, refreshTokenController, registerUserController, sendMailVerificationController, sendOTPVerificationController, userProfileController, userUpdateProfileController } from "../controllers/userController.js";
 import { uploadSingleImage } from "../middlewares/uploadMiddleware.js";
 import { validationMiddleware } from "../middlewares/validationMiddleware.js";
 import { OTPVerificationValidator, ResetPasswordVerification, loginUserValidation, registerUserValidation, sendMailVerification, updateUserProfileValidation } from "../helpers/validations.js";
@@ -16,6 +16,7 @@ userRouter.post("/verification-otp", OTPVerificationValidator, validationMiddlew
 userRouter.post("/forgot-password", ResetPasswordVerification, validationMiddleware, forgotPasswordController);
 userRouter.post("/login", loginUserValidation, validationMiddleware, loginUserController);
 userRouter.post("/profile", verifyToken, userProfileController);
+userRouter.get("/get-all-other-users", verifyToken, getAllOtherUsers);
 userRouter.post("/update-profile", verifyToken, uploadSingleImage('image'), updateUserProfileValidation, validationMiddleware,  userUpdateProfileController);
 userRouter.get("/refresh-token", verifyToken,  refreshTokenController);
 userRouter.get("/logout", verifyToken,  logoutController);

@@ -23,7 +23,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const generateAccessToken = async (userData) => {
-    return jwt.sign(userData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60s' });
+    return jwt.sign(userData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1hr' });
 }
 const generateRefreshToken = async (userData) => {
     return jwt.sign(userData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '2hr' });
@@ -127,7 +127,7 @@ export const forgotPasswordController = async (req, res) => {
             return res.status(400).json({ success: false, message: "Email does not exists!" });
         }
         const random_string = randomString.generate();
-        const message = `<p>Hii, ${ifUserExist?.name}, Please click <a href='http://localhost:4000/reset-password?token=${random_string}'>here </a> to reset the password</p>`;
+        const message = `<p>Hii, ${ifUserExist?.name}, Please click <a href='http://localhost:4000/reset-password?token=${random_string}'>here </a> to reset the password, Link will expire within a minute.</p>`;
         await ResetPassword.deleteMany({ user_id: ifUserExist?._id });
         const updatedPassword = new ResetPassword({
             user_id: ifUserExist?._id,
@@ -136,7 +136,7 @@ export const forgotPasswordController = async (req, res) => {
         await updatedPassword.save();
         await sendMail(ifUserExist?.email, 'Reset Password', message);
 
-        return res.status(201).json({ success: true, message: "Reset Password email sent to your email id" });
+        return res.status(201).json({ success: true, message: "Reset Password email sent to your email address" });
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -148,12 +148,16 @@ export const forgotPasswordController = async (req, res) => {
 export const resetPasswordController = async (req, res) => {
     try {
         if (req.query.token === 'undefined') {
-            console.log('undefined');
             return res.render('404');
         }
         const resetData = await ResetPassword.findOne({ token: req.query.token });
         if (!resetData) {
             return res.render('404');
+        }
+        // Check, either the link expired or not
+        const sendNextOTP = await otpOneMinuteValidation(resetData.timestamp);
+        if (sendNextOTP) {
+            return res.render('reset-password', { resetData, error: "expire" });
         }
         return res.render('reset-password', { resetData })
     }
@@ -169,10 +173,13 @@ export const updateForgotPasswordController = async (req, res) => {
     try {
         const { user_id, new_password, confirm_new_password } = req.body;
         const resetData = await ResetPassword.findOne({ user_id });
+
         if (new_password !== confirm_new_password) {
             return res.render('reset-password', { resetData, error: "Password does not match!" });
         }
+
         let newHashedPassword = await bcrypt.hash(confirm_new_password, 10);
+
         await User.findByIdAndUpdate({ _id: user_id }, {
             $set: {
                 password: newHashedPassword
@@ -273,6 +280,7 @@ export const refreshTokenController = async (req, res) => {
 export const logoutController = async (req, res) => {
     try {
         const token = (req.body && req.body.token) || req.query.token || req.headers['authorization'];
+
         let token_value = token.split(" ")[1];
         let black_listed_token = new BlackList({ token: token_value });
         await black_listed_token.save();
@@ -342,12 +350,13 @@ export const sendOTPVerificationController = async (req, res) => {
         });
     }
 }
+
 export const otpVerificationController = async (req, res) => {
     try {
         const { user_id, otp } = req.body;
 
         // Check, is user exist?
-        const userData = await User.findOne({ _id:user_id });
+        const userData = await User.findOne({ _id: user_id });
         if (!userData) {
             return res.status(400).json({
                 success: false,
@@ -374,7 +383,6 @@ export const otpVerificationController = async (req, res) => {
         }
 
         const generated_otp = await otpOneMinuteValidation(otpData?.timestamps);
-        console.log(generated_otp, 'hello dear');
         if (generated_otp) {
             return res.status(400).json({
                 success: false,
@@ -385,10 +393,23 @@ export const otpVerificationController = async (req, res) => {
         await User.findByIdAndUpdate(
             { _id: user_id },
             {
-                $set:{is_verified:true},
+                $set: { is_verified: true },
             });
 
         return res.status(200).json({ success: true, message: "Account verified successfully!" })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+export const getAllOtherUsers = async (req, res) => {
+    try {
+        const user = req.user;
+        const users = await User.find({ _id: { $nin: [user?._id] } })
+        return res.status(200).json({success:true,  users });
     } catch (error) {
         return res.status(500).json({
             success: false,
