@@ -2,7 +2,7 @@ import './App.css'
 import { Route, Routes } from 'react-router-dom';
 
 import Login from './components/common/Login'
-import SidebarLayout from './components/layouts/sidebarLayout'
+import SidebarLayout from './components/layouts/SidebarLayout'
 import OuterLayout from './components/layouts/OuterLayout';
 import Register from './components/common/Register';
 import ForgotPassword from './components/common/ForgotPassword';

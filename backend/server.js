@@ -1,5 +1,4 @@
 import express from "express";
-import mongoose from "mongoose";
 import { createServer } from "http";
 import dotenv from "dotenv";
 import cors from 'cors';
@@ -14,9 +13,9 @@ const server = createServer(app);
 connectDB()
   .then(() => {
     console.log("Database connected successfully");
-    server.listen(3000, () => {
+    server.listen(process.env.PORT, () => {
       socketHandler(server);
-      console.log("listening on *:3000");
+      console.log("Server is runing on :" + process.env.PORT);
     });
   })
   .catch(err => {
@@ -37,7 +36,7 @@ app.set('views', './views');
 app.use('/api', userRoute);
 app.use('/', authRouter);
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-    console.log("Server is running." + PORT);
-});
+// const PORT = process.env.PORT;
+// app.listen(PORT, () => {
+//     console.log("Server is running." + PORT);
+// });
