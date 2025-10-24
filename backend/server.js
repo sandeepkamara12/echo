@@ -32,7 +32,13 @@ app.use("/images", express.static("public/images"));
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
-
+app.get("/", (req, res) => {
+    console.log("API test endpoint hit");
+  res.status(200).json({
+    success: true,
+    message: "🚀 API is working perfectly!",
+  });
+});
 app.use('/api', userRoute);
 app.use('/', authRouter);
 
