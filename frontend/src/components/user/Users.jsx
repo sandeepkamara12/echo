@@ -37,8 +37,9 @@ const Users = () => {
 
    // Initialize PeerJS
   useEffect(() => {
+    const backendHost = import.meta.env.VITE_BA_URL.replace(/^https?:\/\//, ""); 
 const peer = new Peer(uuidV4(), {
-  host: import.meta.env.VITE_BA_URL,
+  host: backendHost,
   path: "/peerjs",
   secure: true,
 });

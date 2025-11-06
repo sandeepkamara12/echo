@@ -13,7 +13,7 @@ const app = express();
 const server = createServer(app);
 const peerServer = ExpressPeerServer(server, {
   debug: true,
-  path: "/", // you can customize path e.g. "/peerjs"
+  path: "/peerjs", // you can customize path e.g. "/peerjs"
 });
 app.use("/peerjs", peerServer);
 connectDB()
