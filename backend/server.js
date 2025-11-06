@@ -11,9 +11,6 @@ dotenv.config();
 
 const app = express();
 const server = createServer(app);
-
-socketHandler(server);
-
 const peerServer = ExpressPeerServer(server, {
   debug: true,
   path: "/", // you can customize path e.g. "/peerjs"
@@ -30,6 +27,7 @@ connectDB()
   .then(() => {
     console.log("Database connected successfully");
     server.listen(process.env.PORT, () => {
+      socketHandler(server);
       console.log("Server is runing on :" + process.env.PORT);
     });
   })
