@@ -42,7 +42,7 @@ const Users = () => {
     .replace(/\/$/, ""); 
     console.log(backendHost, 'backend');
     const peer = new Peer(uuidV4(), {
-      host: backendHost,
+      host: import.meta.env.VITE_BA_HOST,
       path: "/",
        port: 443,
       secure: true,
