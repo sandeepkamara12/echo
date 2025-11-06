@@ -15,6 +15,13 @@ const peerServer = ExpressPeerServer(server, {
   debug: true,
   path: "/", // you can customize path e.g. "/peerjs"
 });
+peerServer.on("connection", (client) => {
+  console.log("Peer connected:", client.id);
+});
+
+peerServer.on("disconnect", (client) => {
+  console.log("Peer disconnected:", client.id);
+});
 app.use("/peerjs", peerServer);
 connectDB()
   .then(() => {
