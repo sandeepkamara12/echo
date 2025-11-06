@@ -35,14 +35,17 @@ const Users = () => {
   const currentCallRef = useRef(null);
 
 
-   // Initialize PeerJS
+  // Initialize PeerJS
   useEffect(() => {
-    const backendHost = import.meta.env.VITE_BA_URL.replace(/^https?:\/\//, ""); 
-const peer = new Peer(uuidV4(), {
-  host: backendHost,
-  path: "/",
-  secure: true,
-});
+      const backendHost = import.meta.env.VITE_BA_URL
+    .replace(/^https?:\/\//, "")  // remove protocol
+    .replace(/\/$/, ""); 
+    const peer = new Peer(uuidV4(), {
+      host: backendHost,
+      path: "/",
+       port: 443,
+      secure: true,
+    });
 
     peer.on('open', (id) => {
       console.log('My peer ID is:', id);
@@ -51,10 +54,19 @@ const peer = new Peer(uuidV4(), {
 
     // Handle incoming calls
     peer.on('call', async (call) => {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      localVideoRef.current.srcObject = stream;
-      localVideoRef.current.play();
-
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localVideoRef.current.srcObject = stream;
+        localVideoRef.current.play();
+      }
+      catch (err) {
+        alert("No webcam/microphone available, skipping media stream.", err);
+        // Optional: create a fake silent stream
+        const audioContext = new AudioContext();
+        const dst = audioContext.createMediaStreamDestination();
+        stream = dst.stream;
+      }
       call.answer(stream);
       currentCallRef.current = call;
 
@@ -73,7 +85,7 @@ const peer = new Peer(uuidV4(), {
     };
   }, []);
 
- const callPeer = async () => {
+  const callPeer = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     localVideoRef.current.srcObject = stream;
     localVideoRef.current.play();
@@ -94,7 +106,7 @@ const peer = new Peer(uuidV4(), {
       setConnected(false);
     }
   };
-  
+
   // const handleFileUpload = async (e) => {
   //   const file = e.target.files[0];
   //   const formData = new FormData();
@@ -132,7 +144,7 @@ const peer = new Peer(uuidV4(), {
     socket.on("ONLINE_USERS", (onlineUsers) => {
       setOnlineUsers(onlineUsers);
     });
-    
+
     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
       setStream(stream);
       if (myVideo.current) {
@@ -161,14 +173,14 @@ const peer = new Peer(uuidV4(), {
 
   const callUser = (anotherUserId) => {
     console.log("Calling user...", anotherUserId);
-    
+
     // var peer = new Peer();
     // const peer = new Peer({
     //   initiator: true,
     //   trickle: false, 
     //   stream: stream, 
     // });
- 
+
 
     // peer.on("signal", (data) => {
     //   console.log("Signal data:", data);
@@ -230,14 +242,14 @@ const peer = new Peer(uuidV4(), {
       {/* <input type="file" name="image" id="image" onChange={handleFileUpload} /> */}
       {/* <img src={image} alt="Received" style={{ width: '200px', height: '200px' }} /> */}
       <input
-          type="text"
-          placeholder="Enter remote peer ID"
-          value={remoteId}
-          onChange={(e) => setRemoteId(e.target.value)}
-        />
-        <button onClick={callPeer}>Call</button>
-        <button onClick={hangUp} disabled={!connected}>Hang Up</button>
-         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+        type="text"
+        placeholder="Enter remote peer ID"
+        value={remoteId}
+        onChange={(e) => setRemoteId(e.target.value)}
+      />
+      <button onClick={callPeer}>Call</button>
+      <button onClick={hangUp} disabled={!connected}>Hang Up</button>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
         <video ref={localVideoRef} muted style={{ width: '45%', border: '1px solid black' }} />
         <video ref={remoteVideoRef} style={{ width: '45%', border: '1px solid black' }} />
       </div>
@@ -246,10 +258,10 @@ const peer = new Peer(uuidV4(), {
           users?.length > 0 && users.map(user => {
             return (
               <li key={user?._id}
-              onClick={() => callUser(user?._id)}
+                onClick={() => callUser(user?._id)}
               >
                 {user?.name}
-                {isUserOnline(user?._id) ? <span style={{"width":"10px", "height":"10px", "backgroundColor":"green", "borderRadius":"20px", "display":"inline-block"}}></span> : <span style={{"width":"10px", "height":"10px", "backgroundColor":"red", "borderRadius":"20px", "display":"inline-block"}}></span>}
+                {isUserOnline(user?._id) ? <span style={{ "width": "10px", "height": "10px", "backgroundColor": "green", "borderRadius": "20px", "display": "inline-block" }}></span> : <span style={{ "width": "10px", "height": "10px", "backgroundColor": "red", "borderRadius": "20px", "display": "inline-block" }}></span>}
               </li>
             );
           })

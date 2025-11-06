@@ -1,6 +1,8 @@
 import express from "express";
 import { forgotPasswordController, getAllOtherUsers, loginUserController, logoutController, otpVerificationController, refreshTokenController, registerUserController, sendMailVerificationController, sendOTPVerificationController, userProfileController, userUpdateProfileController } from "../controllers/userController.js";
-import { uploadSingleFile, uploadSingleImage } from "../middlewares/uploadMiddleware.js";
+import {
+  //  uploadSingleFile,
+   uploadSingleImage } from "../middlewares/uploadMiddleware.js";
 import { validationMiddleware } from "../middlewares/validationMiddleware.js";
 import { OTPVerificationValidator, ResetPasswordVerification, loginUserValidation, registerUserValidation, sendMailVerification, updateUserProfileValidation } from "../helpers/validations.js";
 import { verifyToken } from "../middlewares/authMiddleware.js";
@@ -20,9 +22,9 @@ userRouter.get("/get-all-other-users", verifyToken, getAllOtherUsers);
 userRouter.post("/update-profile", verifyToken, uploadSingleImage('image'), updateUserProfileValidation, validationMiddleware,  userUpdateProfileController);
 
 
-userRouter.post("/upload", verifyToken, uploadSingleFile('image'), (req, res) => {
-  return res.status(200).json({ url: `http://localhost:4000/images/${req.file.filename}` });
-});
+// userRouter.post("/upload", verifyToken, uploadSingleFile('image'), (req, res) => {
+//   return res.status(200).json({ url: `http://localhost:4000/images/${req.file.filename}` });
+// });
 
 
 userRouter.get("/refresh-token", verifyToken,  refreshTokenController);
