@@ -1,5 +1,6 @@
 import express from "express";
 import { createServer } from "http";
+import { ExpressPeerServer } from "peer";
 import dotenv from "dotenv";
 import cors from 'cors';
 import userRoute from './routes/userRoute.js';
@@ -10,6 +11,11 @@ dotenv.config();
 
 const app = express();
 const server = createServer(app);
+const peerServer = ExpressPeerServer(server, {
+  debug: true,
+  path: "/", // you can customize path e.g. "/peerjs"
+});
+app.use("/peerjs", peerServer);
 connectDB()
   .then(() => {
     console.log("Database connected successfully");

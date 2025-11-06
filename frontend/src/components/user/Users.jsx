@@ -37,11 +37,11 @@ const Users = () => {
 
    // Initialize PeerJS
   useEffect(() => {
-    const peer = new Peer(uuidV4(), {
-      host: 'peerjs.com', // You can replace this with your PeerServer
-      port: 443,
-      secure: true,
-    });
+const peer = new Peer(uuidV4(), {
+  host: import.meta.env.VITE_BA_URL,
+  path: "/peerjs",
+  secure: true,
+});
 
     peer.on('open', (id) => {
       console.log('My peer ID is:', id);
