@@ -1,11 +1,11 @@
-import {io} from 'socket.io-client';
+import { io } from 'socket.io-client';
 let socket;
 
 export const getSocket = () => {
-    if(!socket) {
+    if (!socket) {
         socket = io(import.meta.env.VITE_BA_URL, {
-    transports: ["websocket"],
-  });
+            transports: ["websocket"],
+        });
     }
     return socket;
 }
