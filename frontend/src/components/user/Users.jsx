@@ -49,6 +49,7 @@ const Users = () => {
 
     peer.on('open', (id) => {
       console.log('My peer ID is:', id);
+      alert('My peer ID is:', id);
       setPeerId(id);
     });
 
