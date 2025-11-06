@@ -32,7 +32,7 @@ app.use("/images", express.static("public/images"));
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
-app.get("/", (req, res) => {
+app.get("/test", (req, res) => {
     console.log("API test endpoint hit");
   res.status(200).json({
     success: true,
