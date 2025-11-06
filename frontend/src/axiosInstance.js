@@ -9,7 +9,7 @@ axiosInstance.interceptors.request.use((config)=>{
     const token = JSON.parse(localStorage.getItem('access_token'));
     config.headers = {
         ...config.headers,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
     };
     if(token) {
         config.headers['authorization'] = `Bearer ${token}`;
