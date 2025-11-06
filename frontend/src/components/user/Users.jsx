@@ -40,7 +40,7 @@ const Users = () => {
     const backendHost = import.meta.env.VITE_BA_URL.replace(/^https?:\/\//, ""); 
 const peer = new Peer(uuidV4(), {
   host: backendHost,
-  path: "/peerjs",
+  path: "/",
   secure: true,
 });
 
